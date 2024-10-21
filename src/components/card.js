@@ -2,8 +2,8 @@
 
 const cardTemplate = document.querySelector('#card-template').content;
 // @todo: DOM узлы
+const popupTypeImage = document.querySelector('.popup_type_image');
 
-const cardPlace = document.querySelector('.places__list');
 // @todo: Функция создания карточки
 
 function createCard(card, callBackDeleteCard, likeCallback, imageCallback) {
@@ -15,11 +15,11 @@ function createCard(card, callBackDeleteCard, likeCallback, imageCallback) {
   deleteButton.addEventListener('click', callBackDeleteCard);
   const likeButton = cardElement.querySelector('.card__like-button');
   likeButton.addEventListener('click', likeCallback);
-  document.querySelector('.popup_type_image').classList.add('popup_is-animated');
+  popupTypeImage.classList.add('popup_is-animated');
   cardElement.querySelector('.card__image').addEventListener('click', function() {
     imageCallback(card);
   });
-
+  
   return cardElement;
 }
 
@@ -36,12 +36,6 @@ function like (evt) {
   }
 }
 
-// Image popup
-function imagePopup (card) {
-  document.querySelector('.popup_type_image').classList.add('popup_is-opened');
-  document.querySelector('.popup__image').src = card.link;
-  document.querySelector('.popup__image').alt = card.name;
-  document.querySelector('.popup__caption').textContent = card.name;
-}
 
-export { createCard, deleteCard, like, imagePopup, cardPlace };
+
+export { createCard, deleteCard, like, popupTypeImage };

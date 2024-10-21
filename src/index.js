@@ -1,8 +1,41 @@
 import './pages/index.css'
 import { initialCards } from './components/cards.js'
-import { createCard, deleteCard, like, imagePopup, cardPlace } from './components/card.js';
+import { createCard, deleteCard, like, popupTypeImage } from './components/card.js';
 import { modalPopups } from './components/modal.js';
 
+const cardPlace = document.querySelector('.places__list');
+const popupImage = document.querySelector('.popup__image');
+const popupCaption = document.querySelector('.popup__caption');
+
+
+
+function openModal(modal) {
+  modal.classList.add('popup_is-opened');
+  document.addEventListener('keydown', closePopupOnEscape);
+}
+
+function closeModal(modal) {
+  modal.classList.remove('popup_is-opened');
+  document.removeEventListener('keydown', closePopupOnEscape);
+}
+
+function closePopupOnEscape(event) {
+  if (event.key === 'Escape') { 
+    const openPopup = document.querySelector('.popup_is-opened');
+    if (openPopup) {
+      openPopup.classList.remove('popup_is-opened'); 
+    } 
+  }
+}
+
+// Image popup
+
+function imagePopup (card) {
+  openModal(popupTypeImage);
+  popupImage.src = card.link;
+  popupImage.alt = card.name;
+  popupCaption.textContent = card.name;
+}
 
 // @todo: Вывести карточки на страницу
 
@@ -35,7 +68,8 @@ function handleProfileSubmit(evt) {
   profileTitle.textContent = name;
   profileDescription.textContent = description;
 
-  document.querySelector('.popup_type_edit').classList.remove('popup_is-opened');
+  const popupTypeEdit = document.querySelector('.popup_type_edit');
+  closeModal(popupTypeEdit);
 }
 
 formEditProfile.addEventListener('submit', handleProfileSubmit); 
@@ -50,31 +84,30 @@ function handlePlaceSubmit(evt) {
   evt.preventDefault();
   const cardTemplate = document.querySelector('#card-template').content;
   const cardElement = cardTemplate.querySelector('.places__item').cloneNode(true);
-  const cardPlace = document.querySelector('.places__list');
-  cardElement.querySelector('.card__image').src = placeUrl.value;
-  cardElement.querySelector('.card__title').textContent = placeName.value;
-  cardElement.querySelector('.card__image').alt = placeName.value;
+  const cardImage = cardElement.querySelector('.card__image');
+  const cardTitle = cardElement.querySelector('.card__title');
+  //const cardPlace = document.querySelector('.places__list');
   const deleteButton = cardElement.querySelector('.card__delete-button');
-  deleteButton.addEventListener('click', function(evt) {
-    evt.target.closest('.card').remove();
-  });
+  deleteButton.addEventListener('click', deleteCard);
   const likeButton = cardElement.querySelector('.card__like-button');
-  likeButton.addEventListener('click', function(evt) {
-    if (evt.target.classList.contains('card__like-button')) {
-    evt.target.classList.toggle('card__like-button_is-active');
-    }
-  });
-  document.querySelector('.popup_type_image').classList.add('popup_is-animated');
+  likeButton.addEventListener('click', like); 
+  cardImage.src = placeUrl.value;
+  cardTitle.textContent = placeName.value;
+  cardImage.alt = placeName.value;
+
+  popupTypeImage.classList.add('popup_is-animated');
   cardElement.querySelector('.card__image').addEventListener('click', function() {
-    document.querySelector('.popup__image').src = cardElement.querySelector('.card__image').src;
-    document.querySelector('.popup__image').alt = cardElement.querySelector('.card__title').textContent;
-    document.querySelector('.popup__caption').textContent = cardElement.querySelector('.card__title').textContent;
-    document.querySelector('.popup_type_image').classList.add('popup_is-opened');
+    popupImage.src = cardImage.src; 
+    popupImage.alt = cardTitle.textContent;  
+    popupCaption.textContent = cardTitle.textContent; 
+    popupTypeImage.classList.add('popup_is-opened');
   });
 
   cardPlace.prepend(cardElement);
   formNewPlace.reset();
-  document.querySelector('.popup_type_new-card').classList.remove('popup_is-opened');
+  const popupTypeNewCard = document.querySelector('.popup_type_new-card');
+  closeModal(popupTypeNewCard);
+
 };
 
 formNewPlace.addEventListener('submit', handlePlaceSubmit);

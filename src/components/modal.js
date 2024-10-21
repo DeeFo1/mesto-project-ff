@@ -5,37 +5,45 @@ const profilePopup = document.querySelector('.popup_type_edit');
 const addPlaceButton = document.querySelector('.profile__add-button');
 const addPlacePopup = document.querySelector('.popup_type_new-card');
 
-const closePopupButton = document.querySelectorAll('.popup__close');
-const popupOverlay = document.querySelectorAll('.popup');
+const closePopupButtonList = document.querySelectorAll('.popup__close');
+const popupOverlayList = document.querySelectorAll('.popup');
 
 profilePopup.classList.add('popup_is-animated');
 addPlacePopup.classList.add('popup_is-animated');
 
-editProfileButton.addEventListener('click', function() {
-  profilePopup.classList.add('popup_is-opened');
+function openModal(modal) {
+  modal.classList.add('popup_is-opened');
   document.addEventListener('keydown', closePopupOnEscape);
+}
+
+function closeModal(modal) {
+  modal.classList.remove('popup_is-opened');
+  document.removeEventListener('keydown', closePopupOnEscape);
+}
+
+editProfileButton.addEventListener('click', function() {
+  openModal(profilePopup)
+
 });
 
 addPlaceButton.addEventListener('click', function() {
-  addPlacePopup.classList.add('popup_is-opened');
-  document.addEventListener('keydown', closePopupOnEscape);
+  openModal(addPlacePopup);
 });
 
 function closePopupWithButton(evt) {
     const popup = evt.target.closest('.popup');
-    popup.classList.remove('popup_is-opened');
-    document.removeEventListener('keydown', closePopupOnEscape);
+    closeModal(popup);
 };
 
-closePopupButton.forEach(function(btn) {
+closePopupButtonList.forEach(function(btn) {
   btn.addEventListener('click', closePopupWithButton);
 });
 
-popupOverlay.forEach(function(overlay) {
+popupOverlayList.forEach(function(overlay) {
   overlay.addEventListener('click', function(event) {
       if (event.target === overlay) {
         overlay.classList.remove('popup_is-opened');
-        document.addEventListener('keydown', closePopupOnEscape);
+        //document.addEventListener('keydown', closePopupOnEscape);
       };
   });
 });
@@ -43,11 +51,11 @@ popupOverlay.forEach(function(overlay) {
 function closePopupOnEscape(event) {
   if (event.key === 'Escape') { 
     const openPopup = document.querySelector('.popup_is-opened');
-    //if (openPopup) {
+    if (openPopup) {
       openPopup.classList.remove('popup_is-opened'); 
-    //} 
+    } 
   }
-}
+}   
 };
 
 export { modalPopups };
