@@ -2,7 +2,7 @@
 
 const cardTemplate = document.querySelector('#card-template').content;
 // @todo: DOM узлы
-const popupTypeImage = document.querySelector('.popup_type_image');
+
 
 // @todo: Функция создания карточки
 
@@ -15,7 +15,7 @@ function createCard(card, callBackDeleteCard, likeCallback, imageCallback) {
   deleteButton.addEventListener('click', callBackDeleteCard);
   const likeButton = cardElement.querySelector('.card__like-button');
   likeButton.addEventListener('click', likeCallback);
-  popupTypeImage.classList.add('popup_is-animated');
+  document.querySelector('.popup_type_image').classList.add('popup_is-animated');
   cardElement.querySelector('.card__image').addEventListener('click', function() {
     imageCallback(card);
   });
@@ -38,4 +38,4 @@ function like (evt) {
 
 
 
-export { createCard, deleteCard, like, popupTypeImage };
+export { createCard, deleteCard, like };
