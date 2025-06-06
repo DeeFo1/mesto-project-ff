@@ -5,7 +5,6 @@ import { deleteNewCard, likeCard } from "./api";
 const cardTemplate = document.querySelector('#card-template').content;
 // @todo: DOM узлы
 
-
 // @todo: Функция создания карточки
 
 function createCard(card, personalId, callBackDeleteCard, likeCallback, imageCallback) {
@@ -33,7 +32,7 @@ function createCard(card, personalId, callBackDeleteCard, likeCallback, imageCal
   likeButton.addEventListener('click', function() {
     likeCallback(likeButton, card._id, likesCount)
   });
-  document.querySelector('.popup_type_image').classList.add('popup_is-animated');
+
   cardElement.querySelector('.card__image').addEventListener('click', function() {
     imageCallback(card);
   });

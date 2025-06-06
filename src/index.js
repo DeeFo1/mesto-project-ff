@@ -4,7 +4,7 @@ import { createCard, deleteCard, like } from './components/card.js';
 import { openModal, closeModal, closePopupWithButton, closePopupOnEscape } from './components/modal.js';
 import { enableValidation, clearValidation } from './components/validation.js';
 import { getInitialCards, updateUserData, updateUserAvatar, getUserData, getNewCard, deleteNewCard } from './components/api.js';
-import { data } from 'autoprefixer';
+
 
 const cardPlace = document.querySelector('.places__list');
 const popupImage = document.querySelector('.popup__image');
@@ -14,6 +14,13 @@ const popupTypeImage = document.querySelector('.popup_type_image');
 const popupTypeEdit = document.querySelector('.popup_type_edit');
 let personalId = '';
 
+function buttonLoading (button, isLoading) {
+  if (isLoading) {
+    button.textContent = 'Сохранение...'
+  } else {
+    button.textContent = 'Сохранить'
+  }
+}
 
 //MODAL
 
@@ -27,16 +34,16 @@ const popupOverlayList = document.querySelectorAll('.popup');
 
 popupTypeEdit.classList.add('popup_is-animated');
 addPlacePopup.classList.add('popup_is-animated');
+popupTypeImage.classList.add('popup_is-animated');
 
 editProfileButton.addEventListener('click', function() {
-  clearValidation(formEditProfile);
+  clearValidation(formEditProfile, validationConfig);
   openPopupProfile();
 });
 
-
-
 addPlaceButton.addEventListener('click', function() {
-  clearValidation(formNewPlace);
+  formNewPlace.reset();
+  clearValidation(formNewPlace, validationConfig);
   openModal(addPlacePopup);
 });
 
@@ -51,8 +58,6 @@ popupOverlayList.forEach(function(overlay) {
       };
   });
 });
-
-
 
 // Image popup
 
@@ -70,8 +75,6 @@ Promise.all([getUserData(), getInitialCards()])
     profileDescription.textContent = data.about;
     profileImage.style.backgroundImage = `url(${data.avatar})`;
     personalId = data._id;
-    
-
     cards.forEach(function(card) {
     const readyElement = createCard(card, personalId, deleteCard, like, imagePopup);
     cardPlace.append(readyElement);
@@ -96,7 +99,8 @@ const avatarFormInput = avatarForm.avatar;
 const avatarEditButton = document.querySelector('.profile__image-button');
 
 avatarEditButton.addEventListener('click', function() {
-  clearValidation(avatarForm);
+  avatarForm.reset();
+  clearValidation(avatarForm, validationConfig);
   openModal(avatarEdit);
 })
 
@@ -110,41 +114,39 @@ function handleProfileSubmit(evt) {
   evt.preventDefault();
   
   const profileButton = popupTypeEdit.querySelector('.popup__button')
-  profileButton.textContent = 'Сохранение...';
-  
+  buttonLoading (profileButton, true)
+
   updateUserData(nameInput.value, descriptionInput.value)
     .then(userData => {
       profileTitle.textContent = userData.name;
       profileDescription.textContent = userData.about;
+      closeModal(popupTypeEdit);
     })
     .catch((err) => {
     console.log(err); 
     })
     .finally(() => {
-      profileButton.textContent = 'Сохранить';
+      buttonLoading (profileButton, false)
     }) 
-
-  closeModal(popupTypeEdit);
 }
 
 function handleAvatarSubmit(evt) {
   evt.preventDefault();
 
   const avatarButton = avatarEdit.querySelector('.popup__button')
-  avatarButton.textContent = 'Сохранение...';
+  buttonLoading (avatarButton, true)
   
   updateUserAvatar(avatarFormInput.value)
     .then(userData => {
       profileImage.style.backgroundImage = `url(${userData.avatar})`;
-      
+      closeModal(avatarEdit);
     })
     .catch((err) => {
     console.log(err); 
     })
     .finally(() => {
-      avatarButton.textContent = 'Сохранить';
-    })  
-    closeModal(avatarEdit);
+      buttonLoading (avatarButton, false)
+    })    
 }
 
 formEditProfile.addEventListener('submit', handleProfileSubmit); 
@@ -160,34 +162,34 @@ function handlePlaceSubmit(evt) {
   evt.preventDefault();
 
   const placeButton = formNewPlace.querySelector('.popup__button')
-  placeButton.textContent = 'Сохранение...';
+  buttonLoading (placeButton, true)
 
   getNewCard(placeName.value, placeUrl.value)
     .then(cardData => {
       const newCardElement = createCard(cardData, personalId, deleteCard, like, imagePopup);
       cardPlace.prepend(newCardElement);
       formNewPlace.reset();
-      
+      closeModal(popupTypeNewCard);
     })
     .catch((err) => {
     console.log(err); 
     })
     .finally(() => {
-      placeButton.textContent = 'Сохранить';
+      buttonLoading (placeButton, false)
     }) 
-    closeModal(popupTypeNewCard);
 };
 
 formNewPlace.addEventListener('submit', handlePlaceSubmit);
 
 // VALIDATION
-
-enableValidation({
+const validationConfig = {
   formSelector: '.popup__form',
   inputSelector: '.popup__input',
   submitButtonSelector: '.popup__button',
   inactiveButtonClass: 'popup__button_disabled',
   inputErrorClass: 'popup__input_type_error',
   errorClass: 'popup__error_visible'
-});
+}; 
+
+enableValidation(validationConfig);
 
